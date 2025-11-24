@@ -74,7 +74,7 @@
     "Pagamento": [
         "Cartão: Crédito/Débito",
         "Pix",
-        "Dinheiro: "Vai precisar de troco? informe no whatsapp."
+        "Dinheiro: "Vai precisar de troco? informe no whatsapp.",
     ],
     "Tamanhos": {
         "300": {
@@ -92,3 +92,4 @@
     }
 
 }
+
