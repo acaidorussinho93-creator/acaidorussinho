@@ -72,9 +72,9 @@
         }
     },
     "Pagamento": [
-        "NO MOMENTO NÃO ESTAMOS ACEITANDO PAGAMENTO NA ENTREGA.",
+        "Cartão: Crédito/Débito",
         "Pix",
-        "...)"
+        "Dinheiro: "Vai precisar de troco? informe no whatsapp."
     ],
     "Tamanhos": {
         "300": {
@@ -90,4 +90,5 @@
             "preco": 12
         }
     }
+
 }
