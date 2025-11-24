@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Açaí do Russinho</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#4b1ea9">
+<meta name="format-detection" content="telephone=no">
+
+<style type="text/css">@font-face {font-family:Poppins;font-style:normal;font-weight:300;src:url(/cf-fonts/s/poppins/5.0.11/latin/300/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:400;src:url(/cf-fonts/s/poppins/5.0.11/latin/400/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:600;src:url(/cf-fonts/s/poppins/5.0.11/latin/600/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}</style>
+
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: "Poppins", sans-serif;
+        background: #f1eefc;
+        min-height: 100vh;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    .container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px 18px 50px;
+    }
+    .logo-area {
+        text-align: center;
+        margin: 25px 0 15px;
+    }
+    .logo-area img {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        object-fit: cover;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    }
+    h1 {
+        text-align: center;
+        color: #4b1ea9;
+        font-size: 2em;
+        font-weight: 600;
+        margin: 10px 0 30px;
+        text-shadow: 0 2px 10px rgba(75,30,169,0.2);
+    }
+    h2 {
+        color: #4b1ea9;
+        font-size: 1.4em;
+        margin: 0 0 16px 0;
+        font-weight: 600;
+    }
+    .card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 26px;
+        margin-bottom: 24px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    }
+
+    select, input[type="text"], input[type="tel"] {
+        width: 100%;
+        padding: 16px;
+        border-radius: 18px;
+        border: 1.5px solid #cfc6f2;
+        background: #faf9ff;
+        font-size: 16px;
+        margin-bottom: 14px;
+        transition: all 0.3s;
+    }
+    select:focus, input:focus {
+        border-color: #5b2bbf;
+        background: #fff;
+        box-shadow: 0 0 12px rgba(91,43,191,0.3);
+        outline: none;
+    }
+
+    .display-box {
+        background: #fff;
+        padding: 18px;
+        border-radius: 22px;
+        text-align: center;
+        font-size: 1.5em;
+        font-weight: 600;
+        border: 3px solid #e6ddff;
+        color: #4b1ea9;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+
+    button.big-btn {
+        width: 100%;
+        background: #25D366;
+        color: white;
+        padding: 18px;
+        border-radius: 26px;
+        border: none;
+        font-size: 1.4em;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 20px;
+        box-shadow: 0 8px 20px rgba(37,211,102,0.4);
+        transition: all 0.3s;
+    }
+    button.big-btn:active { transform: scale(0.98); }
+
+    /* CONTADORES */
+    .item-contador {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 0;
+        border-bottom: 1.5px solid #eee;
+    }
+    .item-contador:last-child { border-bottom: none; }
+    .item-info { flex: 1; padding-right: 15px; }
+    .item-info strong {
+        font-size: 1.25em;
+        display: block;
+        color: #333;
+        margin-bottom: 4px;
+    }
+    .item-info .descricao {
+        font-size: 0.95em;
+        color: #666;
+        line-height: 1.4;
+        margin: 6px 0;
+    }
+    .item-info .preco {
+        color: #5b2bbf;
+        font-weight: 600;
+        font-size: 1.1em;
+    }
+    .contador {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: #f0e8ff;
+        padding: 10px 14px;
+        border-radius: 50px;
+        min-width: 140px;
+        justify-content: center;
+    }
+    .contador button {
+        width: 48px;
+        height: 48px;
+        border: none;
+        border-radius: 50%;
+        background: #5b2bbf;
+        color: white;
+        font-size: 1.8em;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .contador span {
+        min-width: 40px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1.4em;
+        color: #4b1ea9;
+    }
+
+    @media (max-width: 480px) {
+        .container { padding: 16px 14px 60px; }
+        h1 { font-size: 2.1em; }
+        h2 { font-size: 1.45em; }
+        .item-info strong { font-size: 1.3em; }
+        .contador button { width: 52px; height: 52px; font-size: 2em; }
+        .contador span { font-size: 1.6em; }
+        button.big-btn { font-size: 1.5em; padding: 20px; }
+        .display-box { font-size: 1.6em; }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-area">
+        <img src="https://i.ibb.co/nMBNb4Y4/a-aidorussinho2.png" alt="Açaí do Russinho">
+    </div>
+    <h1>Monte Seu Pedido</h1>
+
+    <form id="form-pedido">
+
+        <!-- COPOS -->
+        <div class="card">
+            <h2>Copos de Açaí</h2>
+            {% for key, item in opcoes.Tamanhos.items() %}
+            <div class="item-contador">
+                <div class="item-info">
+                    <strong>{{ item.nome }}</strong>
+                    <span class="preco">R$ {{ "%.2f"|format(item.preco) }}</span>
+                </div>
+                <div class="contador">
+                    <button type="button" onclick="mudarQtd('tamanho_{{ key }}', -1)">−</button>
+                    <span id="qtd-tamanho_{{ key }}">0</span>
+                    <button type="button" onclick="mudarQtd('tamanho_{{ key }}', 1)">+</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- COMPLEMENTOS -->
+        <div class="card">
+            <h2>Complementos</h2>
+            {% for key, preco in opcoes.Complementos.items() %}
+            <label style="display:flex;align-items:center;gap:12px;margin:14px 0;font-size:16px;">
+                <input type="checkbox" data-preco="{{ preco }}" onchange="calcularTotal()">
+                {{ key.replace('_', ' ').title() }} {% if preco > 0 %}— R$ {{ "%.2f"|format(preco) }}{% endif %}
+            </label>
+            {% endfor %}
+        </div>
+
+        <!-- CALDAS -->
+        <div class="card">
+            <h2>Caldas</h2>
+            {% for key, preco in opcoes.Caldas.items() %}
+            <label style="display:flex;align-items:center;gap:12px;margin:14px 0;font-size:16px;">
+                <input type="checkbox" data-preco="{{ preco }}" onchange="calcularTotal()">
+                {{ key.title() }} {% if preco > 0 %}— R$ {{ "%.2f"|format(preco) }}{% endif %}
+            </label>
+            {% endfor %}
+        </div>
+
+        <!-- LANCHES DO RUSSINHO - DESCRIÇÃO EDITÁVEL NO ADMIN -->
+        <div class="card">
+            <h2>Lanches do Russinho</h2>
+            {% for key, item in opcoes.Lanches.items() %}
+            <div class="item-contador">
+                <div class="item-info">
+                    <strong>{{ item.nome }}</strong>
+                    {% if item.descricao and item.descricao.strip() %}
+                    <div class="descricao">{{ item.descricao }}</div>
+                    {% endif %}
+                    <span class="preco">R$ {{ "%.2f"|format(item.preco) }}</span>
+                </div>
+                <div class="contador">
+                    <button type="button" onclick="mudarQtd('lanche_{{ key }}', -1)">−</button>
+                    <span id="qtd-lanche_{{ key }}">0</span>
+                    <button type="button" onclick="mudarQtd('lanche_{{ key }}', 1)">+</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ENDEREÇO -->
+        <div class="card">
+            <h2>Endereço & Entrega</h2>
+            <input type="text" id="rua" placeholder="Rua / Avenida" required>
+            <input type="text" id="numero" placeholder="Número" required>
+            <select id="area-entrega" required onchange="calcularTotal()">
+                <option value="" disabled selected>Selecione a área</option>
+                {% for key, area in opcoes.Entrega.items() %}
+                <option value="{{ area.nome }}" data-taxa="{{ area.taxa }}">
+                    {{ area.nome }} — R$ {{ "%.2f"|format(area.taxa) }}
+                </option>
+                {% endfor %}
+            </select>
+            <div id="taxa-display" class="display-box">Taxa: R$ 0,00</div>
+            <input type="text" id="referencia" placeholder="Referência (opcional)">
+            <input type="hidden" id="bairro">
+        </div>
+
+        <!-- PAGAMENTO -->
+        <div class="card">
+            <h2>Forma de Pagamento</h2>
+            {% for forma in opcoes.Pagamento %}
+            <label style="display:flex;align-items:center;gap:12px;margin:14px 0;font-size:16px;">
+                <input type="radio" name="pagamento" value="{{ forma }}" required>
+                {{ forma }}
+            </label>
+            {% endfor %}
+        </div>
+
+        <div id="pix-info" class="card" style="display:none;">
+            <h2>Pagamento via PIX</h2>
+            <div class="display-box">Chave PIX (CPF):<br><strong>160.562.797-66</strong></div>
+            <p style="color:#4b1ea9;margin-top:12px;font-size:15px;">Envie o comprovante junto com o pedido</p>
+        </div>
+
+        <div class="card">
+            <h2>Seu WhatsApp</h2>
+            <input type="tel" id="contato" placeholder="(21) 99999-9999" required>
+        </div>
+
+        <div id="total-display" class="display-box">Total: R$ 0,00</div>
+        <button type="button" class="big-btn" onclick="enviarPedido()">Enviar Pedido</button>
+    </form>
+</div>
+
+<script>
+const OPCOES = {{ opcoes | tojson }};
+const MEU_WHATSAPP = "5521996792737";
+let quantidades = {};
+
+function mudarQtd(id, delta) {
+    let qtd = (quantidades[id] || 0) + delta;
+    if (qtd < 0) qtd = 0;
+    quantidades[id] = qtd;
+    document.getElementById('qtd-' + id).textContent = qtd;
+    calcularTotal();
+}
+
+function formatar(v) { return "R$ " + v.toFixed(2).replace(".", ","); }
+
+function calcularTotal() {
+    let total = 0;
+    Object.keys(OPCOES.Tamanhos).forEach(k => total += (quantidades['tamanho_' + k] || 0) * OPCOES.Tamanhos[k].preco);
+    document.querySelectorAll('input[type="checkbox"]:checked').forEach(c => total += parseFloat(c.dataset.preco || 0));
+    Object.keys(OPCOES.Lanches).forEach(k => total += (quantidades['lanche_' + k] || 0) * OPCOES.Lanches[k].preco);
+
+    const area = document.getElementById("area-entrega");
+    let taxa = 0;
+    if (area && area.selectedIndex > 0) {
+        taxa = parseFloat(area.options[area.selectedIndex].dataset.taxa) || 0;
+        document.getElementById("taxa-display").textContent = "Taxa: " + formatar(taxa);
+        document.getElementById("bairro").value = area.value;
+    }
+    total += taxa;
+
+    document.getElementById("total-display").textContent = "Total: " + formatar(total);
+    return total;
+}
+
+function enviarPedido() {
+    calcularTotal();
+    const totalItens = Object.values(quantidades).reduce((a,b) => a+b, 0) + document.querySelectorAll('input[type="checkbox"]:checked').length;
+    if (totalItens === 0) return alert("Adicione pelo menos um item!");
+
+    const rua = document.getElementById("rua").value.trim();
+    const numero = document.getElementById("numero").value.trim();
+    const bairro = document.getElementById("bairro").value || "Não informado";
+    const ref = document.getElementById("referencia").value.trim();
+    const contato = document.getElementById("contato").value.trim();
+    const pagamento = document.querySelector('input[name="pagamento"]:checked');
+    if (!rua || !numero || !contato || !pagamento) return alert("Preencha todos os campos!");
+
+    let msg = "*NOVO PEDIDO DO RUSSINHO!*%0A%0A";
+
+    let copos = []; 
+    Object.keys(OPCOES.Tamanhos).forEach(k => { 
+        const q = quantidades['tamanho_' + k] || 0; 
+        if (q>0) copos.push(q + "x " + OPCOES.Tamanhos[k].nome); 
+    });
+    msg += "*Copos:* " + (copos.length ? copos.join(" | ") : "Nenhum") + "%0A";
+
+    const comps = Array.from(document.querySelectorAll('#form-pedido input[type=checkbox]:checked'))
+        .filter(c => c.closest('.card').querySelector('h2').textContent.includes("Complementos"))
+        .map(c => c.nextSibling.textContent.trim().split('—')[0].trim()).join(", ");
+    msg += "*Complementos:* " + (comps || "Nenhum") + "%0A";
+
+    const caldas = Array.from(document.querySelectorAll('#form-pedido input[type=checkbox]:checked'))
+        .filter(c => c.closest('.card').querySelector('h2').textContent.includes("Caldas"))
+        .map(c => c.nextSibling.textContent.trim().split('—')[0].trim()).join(", ");
+    msg += "*Caldas:* " + (caldas || "Nenhuma") + "%0A";
+
+    let lanches = []; 
+    Object.keys(OPCOES.Lanches).forEach(k => { 
+        const q = quantidades['lanche_' + k] || 0; 
+        if (q>0) lanches.push(q + "x " + OPCOES.Lanches[k].nome); 
+    });
+    msg += "*Lanches:* " + (lanches.length ? lanches.join(" | ") : "Nenhum") + "%0A%0A";
+
+    msg += `*Endereço:* ${rua}, ${numero} - ${bairro}%0A`;
+    if (ref) msg += `*Referência:* ${ref}%0A`;
+    msg += `*Contato:* ${contato}%0A%0A*Pagamento:* ${pagamento.value}`;
+    if (pagamento.value.toLowerCase().includes("pix")) msg += `%0A%0A*Chave PIX:* 160.562.797-66%0AEnvie o comprovante!`;
+    msg += `%0A%0A*TOTAL: ${formatar(calcularTotal())}*`;
+
+    window.open(`https://api.whatsapp.com/send?phone=${MEU_WHATSAPP}&text=${msg}`, "_blank");
+}
+
+document.querySelectorAll('input[name="pagamento"]').forEach(r => {
+    r.addEventListener("change", () => {
+        document.getElementById("pix-info").style.display = r.value.toLowerCase().includes("pix") ? "block" : "none";
+    });
+});
+
+document.addEventListener("DOMContentLoaded", calcularTotal);
+</script>
+</body>
+</html>

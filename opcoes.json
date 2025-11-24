@@ -1,0 +1,93 @@
+{
+    "Caldas": {
+        "chocolate": 0,
+        "manga": 0,
+        "menta": 0,
+        "morango": 0,
+        "uva": 0
+    },
+    "Complementos": {
+        "amendoim": 0,
+        "choco_bool": 0,
+        "granola": 0,
+        "leite_po": 0,
+        "pacoca": 0,
+        "sucrilho": 0
+    },
+    "Entrega": {
+        "imbarie": {
+            "nome": "Imbarie",
+            "taxa": 5
+        },
+        "parada_angelica": {
+            "nome": "Parada Angelica",
+            "taxa": 2
+        },
+        "parque_mait_": {
+            "nome": "Parque Maitá",
+            "taxa": 2
+        },
+        "parque_paranhos": {
+            "nome": "Parque Paranhos",
+            "taxa": 2
+        },
+        "piabet__e_arredores": {
+            "nome": "Piabetá e arredores",
+            "taxa": 5
+        },
+        "santa_lucia": {
+            "nome": "Santa Lucia",
+            "taxa": 3
+        },
+        "taquara": {
+            "nome": "Taquara",
+            "taxa": 7
+        }
+    },
+    "Lanches": {
+        "combo": {
+            "nome": "Clássico simples + batata 300g + ykó",
+            "preco": 17,
+            "descricao": "Pão, carne, queijo e salada. batata aproximadamente 300g"
+        },
+        "xtudooooo": {
+            "nome": "Classico simples com açai de 300ml",
+            "preco": 11,
+            "descricao": "Pão, carne, queijo e salada. Escolha seu açai no whatsapp."
+        },
+        "xtudo": {
+            "nome": "X-tudo",
+            "preco": 11,
+            "descricao": "Pão, carne, queijo, calabresa, ovo, bacon e salada."
+        },
+        "sanduiche_natural": {
+            "nome": "X-bacon",
+            "preco": 16.99,
+            "descricao": "Pão, carne, queijo,ovo, calabresa, o dobro de bacon e salada."
+        },
+        "misto_quente": {
+            "nome": "Clássico simples + Ykó + açai 300ml",
+            "preco": 15,
+            "descricao": "Pão, carne, queijo e salada. Escolha seu açai no whatsapp."
+        }
+    },
+    "Pagamento": [
+        "NO MOMENTO NÃO ESTAMOS ACEITANDO PAGAMENTO NA ENTREGA.",
+        "Pix",
+        "...)"
+    ],
+    "Tamanhos": {
+        "300": {
+            "nome": "COPO DE 300ML",
+            "preco": 8
+        },
+        "400ml": {
+            "nome": "COPO DE 400ML",
+            "preco": 10
+        },
+        "500ml": {
+            "nome": "COPO DE 500ML",
+            "preco": 12
+        }
+    }
+}

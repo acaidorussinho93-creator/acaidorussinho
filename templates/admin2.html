@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "Poppins", sans-serif; background: #f1eefc; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 30px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+        h1 { text-align: center; color: #4b1ea9; margin-bottom: 30px; }
+        .loading { text-align: center; color: #d35400; font-weight: 600; margin: 40px 0; }
+        .section { display: none; background: #f9f7ff; padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #e6ddff; }
+        .form-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+        .form-group input { flex: 1; min-width: 100px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+        .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; }
+        .btn-add { background: #25D366; color: white; }
+        .btn-add:hover { background: #1ebe5d; }
+        .btn-edit { background: #4b1ea9; color: white; font-size: 0.8em; padding: 5px 10px; }
+        .btn-remove { background: #ff4d4d; color: white; font-size: 0.8em; padding: 5px 10px; }
+        .item-list { list-style: none; padding: 0; margin: 15px 0 0; }
+        .item-list li { background: #fff; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #5b2bbf; display: flex; justify-content: space-between; align-items: center; }
+        textarea { width: 100%; height: 220px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; margin-top: 20px; font-family: monospace; background: #f8f8f8; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Painel de Administração - Cardápio</h1>
+    <div class="loading" id="loading">Carregando dados do servidor...</div>
+
+    <!-- SEÇÕES -->
+    <div class="section" id="sec-tamanhos">
+        <h2>Tamanhos de Açaí</h2>
+        <div class="form-group">
+            <input type="text" id="tamanho-chave" placeholder="Chave (ex: 300ml)">
+            <input type="text" id="tamanho-nome" placeholder="Nome">
+            <input type="number" id="tamanho-preco" placeholder="Preço" step="0.01">
+            <button class="btn btn-add" onclick="adicionarTamanho()">Adicionar</button>
+        </div>
+        <ul class="item-list" id="lista-tamanhos"></ul>
+    </div>
+
+    <div class="section" id="sec-complementos">
+        <h2>Complementos</h2>
+        <div class="form-group">
+            <input type="text" id="comp-chave" placeholder="Chave (ex: granola)">
+            <input type="number" id="comp-preco" placeholder="Preço" step="0.01">
+            <button class="btn btn-add" onclick="adicionarComplemento()">Adicionar</button>
+        </div>
+        <ul class="item-list" id="lista-complementos"></ul>
+    </div>
+
+    <div class="section" id="sec-caldas">
+        <h2>Caldas</h2>
+        <div class="form-group">
+            <input type="text" id="calda-chave" placeholder="Chave (ex: morango)">
+            <input type="number" id="calda-preco" placeholder="Preço" step="0.01">
+            <button class="btn btn-add" onclick="adicionarCalda()">Adicionar</button>
+        </div>
+        <ul class="item-list" id="lista-caldas"></ul>
+    </div>
+
+    <div class="section" id="sec-entregas">
+        <h2>Áreas de Entrega</h2>
+        <div class="form-group">
+            <input type="text" id="entrega-nome" placeholder="Bairro">
+            <input type="number" id="entrega-taxa" placeholder="Taxa" step="0.01">
+            <button class="btn btn-add" onclick="adicionarEntrega()">Adicionar</button>
+        </div>
+        <ul class="item-list" id="lista-entregas"></ul>
+    </div>
+
+    <div class="section" id="sec-json">
+        <h2>JSON Atualizado</h2>
+        <textarea id="json-output" readonly></textarea>
+    </div>
+</div>
+
+<script>
+    let OPCOES = {};
+
+    const formatar = (v) => `R$ ${parseFloat(v).toFixed(2).replace('.', ',')}`;
+    const toKey = (str) => str.trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+
+    function carregarDados() {
+        console.log("Tentando carregar /api/opcoes...");
+        fetch('/api/opcoes')
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                return r.json();
+            })
+            .then(data => {
+                console.log("Dados carregados:", data);
+                OPCOES = data;
+                document.getElementById('loading').style.display = 'none';
+                document.querySelectorAll('.section').forEach(s => s.style.display = 'block');
+                renderizarTudo();
+            })
+            .catch(err => {
+                console.error("ERRO:", err);
+                document.getElementById('loading').innerHTML = `
+                    <strong style="color:red;">ERRO AO CARREGAR!</strong><br>
+                    Verifique:<br>
+                    1. O Flask está rodando?<br>
+                    2. Acesse: <a href="/api/opcoes" target="_blank">/api/opcoes</a><br>
+                    3. Veja o console (F12)
+                `;
+            });
+    }
+
+    function renderizarTudo() {
+        renderizarLista('lista-tamanhos', OPCOES.Tamanhos, (k, v) => `${v.nome} — ${formatar(v.preco)}`);
+        renderizarLista('lista-complementos', OPCOES.Complementos, (k, v) => `${k.replace(/_/g, ' ').toUpperCase()} — ${formatar(v)}`);
+        renderizarLista('lista-caldas', OPCOES.Caldas, (k, v) => `${k.toUpperCase()} — ${formatar(v)}`);
+        renderizarLista('lista-entregas', OPCOES.Entrega, (k, v) => `${v.nome} — ${v.taxa == 0 ? 'Grátis' : formatar(v.taxa)}`);
+        document.getElementById('json-output').value = JSON.stringify(OPCOES, null, 4);
+    }
+
+    function renderizarLista(id, dados, formatFn) {
+        const ul = document.getElementById(id);
+        ul.innerHTML = '';
+        for (const chave in dados) {
+            const item = dados[chave];
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${formatFn(chave, item)}</span>
+                <div>
+                    <button class="btn btn-edit" onclick="editar('${id}', '${chave}')">Editar</button>
+                    <button class="btn btn-remove" onclick="remover('${id}', '${chave}')">Remover</button>
+                </div>
+            `;
+            ul.appendChild(li);
+        }
+    }
+
+    // ADICIONAR
+    window.adicionarTamanho = () => {
+        const chave = toKey(document.getElementById('tamanho-chave').value);
+        const nome = document.getElementById('tamanho-nome').value.trim();
+        const preco = parseFloat(document.getElementById('tamanho-preco').value);
+        if (chave && nome && !isNaN(preco)) {
+            OPCOES.Tamanhos[chave] = { nome, preco };
+            salvar();
+        }
+    };
+
+    window.adicionarComplemento = () => {
+        const chave = toKey(document.getElementById('comp-chave').value);
+        const preco = parseFloat(document.getElementById('comp-preco').value);
+        if (chave && !isNaN(preco)) {
+            OPCOES.Complementos[chave] = preco;
+            salvar();
+        }
+    };
+
+    window.adicionarCalda = () => {
+        const chave = toKey(document.getElementById('calda-chave').value);
+        const preco = parseFloat(document.getElementById('calda-preco').value);
+        if (chave && !isNaN(preco)) {
+            OPCOES.Caldas[chave] = preco;
+            salvar();
+        }
+    };
+
+    window.adicionarEntrega = () => {
+        const nome = document.getElementById('entrega-nome').value.trim();
+        const taxa = parseFloat(document.getElementById('entrega-taxa').value);
+        const chave = toKey(nome);
+        if (nome && !isNaN(taxa)) {
+            OPCOES.Entrega[chave] = { nome, taxa };
+            salvar();
+        }
+    };
+
+    // EDITAR / REMOVER
+    window.editar = (listaId, chave) => {
+        const map = {
+            'lista-tamanhos': ['Tamanhos', 'tamanho-chave', 'tamanho-nome', 'tamanho-preco'],
+            'lista-complementos': ['Complementos', 'comp-chave', null, 'comp-preco'],
+            'lista-caldas': ['Caldas', 'calda-chave', null, 'calda-preco'],
+            'lista-entregas': ['Entrega', 'entrega-nome', null, 'entrega-taxa']
+        };
+        const [secao, campoChave, campoNome, campoPreco] = map[listaId];
+        const item = OPCOES[secao][chave];
+
+        document.getElementById(campoChave).value = chave;
+        if (campoNome) document.getElementById(campoNome).value = item.nome || item;
+        if (campoPreco) document.getElementById(campoPreco).value = item.preco || item;
+
+        delete OPCOES[secao][chave];
+        renderizarTudo();
+    };
+
+    window.remover = (listaId, chave) => {
+        if (confirm('Remover?')) {
+            const secoes = { 'lista-tamanhos': 'Tamanhos', 'lista-complementos': 'Complementos', 'lista-caldas': 'Caldas', 'lista-entregas': 'Entrega' };
+            delete OPCOES[secoes[listaId]][chave];
+            salvar();
+        }
+    };
+
+    function salvar() {
+        fetch('/admin/salvar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(OPCOES)
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.status === 'success') {
+                renderizarTudo();
+                limparCampos();
+                alert('Salvo!');
+            }
+        });
+    }
+
+    function limparCampos() {
+        document.querySelectorAll('input').forEach(i => i.value = '');
+    }
+
+    // INICIAR
+    document.addEventListener('DOMContentLoaded', carregarDados);
+</script>
+
+</body>
+</html>

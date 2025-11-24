@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Admin - Açaí do Russinho</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "Poppins", sans-serif; background: #f1eefc; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 30px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+        h1 { text-align: center; color: #4b1ea9; margin-bottom: 30px; }
+        .loading { text-align: center; color: #d35400; font-weight: 600; margin: 40px 0; }
+        .section { display: none; background: #f9f7ff; padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #e6ddff; }
+        .form-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
+        .form-group input, .form-group textarea { flex: 1; min-width: 150px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+        .form-group textarea { height: 80px; resize: vertical; }
+        .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; }
+        .btn-add { background: #25D366; color: white; }
+        .btn-add:hover { background: #1ebe5d; }
+        .btn-edit { background: #4b1ea9; color: white; font-size: 0.8em; padding: 5px 10px; }
+        .btn-remove { background: #ff4d4d; color: white; font-size: 0.8em; padding: 5px 10px; }
+        .item-list { list-style: none; padding: 0; margin: 15px 0 0; }
+        .item-list li { background: #fff; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #5b2bbf; display: flex; justify-content: space-between; align-items: flex-start; flex-direction: column; gap: 6px; }
+        .item-list li span { font-size: 0.95em; }
+        textarea#json-output { width: 100%; height: 300px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; margin-top: 20px; font-family: monospace; background: #f8f8f8; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Painel de Administração - Cardápio</h1>
+
+    <!-- CONTADOR DE VISITAS -->
+    <div class="section" style="background: linear-gradient(135deg, #fff8e1, #fff0c2); padding:24px; text-align:center; border-radius:16px; border: 3px solid #ff8f00; margin-bottom:30px; box-shadow:0 8px 25px rgba(255,143,0,0.2);">
+        <h2 style="color:#e65100; margin:0 0 16px; font-size:1.8em;">Visitas ao Cardápio</h2>
+        
+        {% set hoje = "now" | date("%Y-%m-%d") %}
+        {% set qtd_hoje = visitas_diarias.get(hoje, 0) %}
+
+        <p style="font-size:1.6em; margin:12px 0; font-weight:600; color:#d84315;">
+            Hoje ({{ "now" | date("%d/%m/%Y") }}): 
+            <strong style="font-size:2em; color:#b71c1c;">{{ qtd_hoje }} pessoas</strong>
+        </p>
+
+        {% set datas_ordenadas = visitas_diarias.keys() | list | sort(reverse=True) %}
+        {% set ontem = datas_ordenadas[1] if datas_ordenadas|length > 1 and datas_ordenadas[0] == hoje else none %}
+        {% if ontem %}
+        <p style="font-size:1.3em; color:#e65100; margin:10px 0;">
+            Ontem ({{ ontem[8:10] }}/{{ ontem[5:7] }}/{{ ontem[2:4] }}): 
+            <strong>{{ visitas_diarias[ontem] }} pessoas</strong>
+        </p>
+        {% endif %}
+
+        <p style="margin-top:18px; font-size:1.2em; color:#bf360c;">
+            Total acumulado (todos os dias): 
+            <strong style="font-size:1.5em; color:#d84315;">{{ visitas_diarias.values() | sum }} visitas únicas</strong>
+        </p>
+    </div>
+
+    <div class="loading" id="loading">Carregando dados do servidor...</div>
+
+    <!-- TAMANHOS -->
+    <div class="section" id="sec-tamanhos">
+        <h2>Tamanhos de Açaí</h2>
+        <div class="form-group">
+            <input type="text" id="tamanho-chave" placeholder="Chave (ex: 300ml)">
+            <input type="text" id="tamanho-nome" placeholder="Nome">
+            <input type="number" id="tamanho-preco" placeholder="Preço" step="0.01">
+            <button class="btn btn-add" onclick="adicionarTamanho()">Adicionar</button>
+        </div>
+        <ul class="item-list" id="lista-tamanhos"></ul>
+    </div>
+
+    <!-- COMPLEMENTOS -->
+    <div class="section" id="sec-complementos">
+        <h2>Complementos</h2>
+        <div class="form-group">
+            <input type="text" id="comp-chave" placeholder="Chave (ex: granola)">
+            <input type="number" id="comp-preco" placeholder="Preço" step="0.01">
+            <button class="btn btn-add" onclick="adicionarComplemento()">Adicionar</button>
+        </div>
+        <ul class="item-list" id="lista-complementos"></ul>
+    </div>
+
+    <!-- CALDAS -->
+    <div class="section" id="sec-caldas">
+        <h2>Caldas</h2>
+        <div class="form-group">
+            <input type="text" id="calda-chave" placeholder="Chave (ex: morango)">
+            <input type="number" id="calda-preco" placeholder="Preço" step="0.01">
+            <button class="btn btn-add" onclick="adicionarCalda()">Adicionar</button>
+        </div>
+        <ul class="item-list" id="lista-caldas"></ul>
+    </div>
+
+    <!-- ENTREGAS -->
+    <div class="section" id="sec-entregas">
+        <h2>Áreas de Entrega</h2>
+        <div class="form-group">
+            <input type="text" id="entrega-nome" placeholder="Bairro">
+            <input type="number" id="entrega-taxa" placeholder="Taxa" step="0.01">
+            <button class="btn btn-add" onclick="adicionarEntrega()">Adicionar</button>
+        </div>
+        <ul class="item-list" id="lista-entregas"></ul>
+    </div>
+
+    <!-- LANCHES -->
+    <div class="section" id="sec-lanches">
+        <h2>Lanches do Russinho</h2>
+        <div class="form-group">
+            <input type="text" id="lanche-chave" placeholder="Chave (ex: x_bacon)">
+            <input type="text" id="lanche-nome" placeholder="Nome no cardápio">
+            <input type="number" id="lanche-preco" placeholder="Preço" step="0.01">
+            <input type="text" id="lanche-desc" placeholder="Descrição (opcional)" style="flex: 2;">
+            <button class="btn btn-add" onclick="adicionarLanche()">Adicionar / Atualizar</button>
+        </div>
+        <ul class="item-list" id="lista-lanches"></ul>
+    </div>
+
+    <!-- JSON -->
+    <div class="section" id="sec-json">
+        <h2>JSON Atualizado</h2>
+        <textarea id="json-output" readonly></textarea>
+    </div>
+</div>
+
+<script>
+    let OPCOES = {};
+
+    const formatar = (v) => `R$ ${parseFloat(v).toFixed(2).replace('.', ',')}`;
+    const toKey = (str) => str.trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+
+    function carregarDados() {
+        fetch('/api/opcoes')
+            .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+            .then(data => {
+                OPCOES = data;
+                document.getElementById('loading').style.display = 'none';
+                document.querySelectorAll('.section').forEach(s => s.style.display = 'block');
+                renderizarTudo();
+            })
+            .catch(err => {
+                document.getElementById('loading').innerHTML = `<strong style="color:red;">ERRO AO CARREGAR!</strong><br>Acesse <a href="/api/opcoes" target="_blank">/api/opcoes</a>`;
+            });
+    }
+
+    function renderizarTudo() {
+        renderizarLista('lista-tamanhos', OPCOES.Tamanhos || {}, (k, v) => `${v.nome} — ${formatar(v.preco)}`);
+        renderizarLista('lista-complementos', OPCOES.Complementos || {}, (k, v) => `${k.replace(/_/g, ' ').toUpperCase()} — ${formatar(v)}`);
+        renderizarLista('lista-caldas', OPCOES.Caldas || {}, (k, v) => `${k.toUpperCase()} — ${formatar(v)}`);
+        renderizarLista('lista-entregas', OPCOES.Entrega || {}, (k, v) => `${v.nome} — ${v.taxa == 0 ? 'Grátis' : formatar(v.taxa)}`);
+        renderizarLista('lista-lanches', OPCOES.Lanches || {}, (k, v) => `<strong>${v.nome}</strong> — ${formatar(v.preco)}<br><small style="color:#666;">${v.descricao || '(sem descrição)'}</small>`);
+        document.getElementById('json-output').value = JSON.stringify(OPCOES, null, 4);
+    }
+
+    function renderizarLista(id, dados, formatFn) {
+        const ul = document.getElementById(id);
+        ul.innerHTML = '';
+        for (const chave in dados) {
+            const item = dados[chave];
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <div style="flex:1;">${formatFn(chave, item)}</div>
+                <div>
+                    <button class="btn btn-edit" onclick="editar('${id}', '${chave}')">Editar</button>
+                    <button class="btn btn-remove" onclick="remover('${id}', '${chave}')">Remover</button>
+                </div>
+            `;
+            ul.appendChild(li);
+        }
+    }
+
+    // ADICIONAR
+    window.adicionarTamanho = () => {
+        const chave = toKey(document.getElementById('tamanho-chave').value);
+        const nome = document.getElementById('tamanho-nome').value.trim();
+        const preco = parseFloat(document.getElementById('tamanho-preco').value);
+        if (chave && nome && !isNaN(preco)) {
+            OPCOES.Tamanhos[chave] = { nome, preco };
+            salvar();
+        }
+    };
+
+    window.adicionarComplemento = () => {
+        const chave = toKey(document.getElementById('comp-chave').value);
+        const preco = parseFloat(document.getElementById('comp-preco').value);
+        if (chave && !isNaN(preco)) { OPCOES.Complementos[chave] = preco; salvar(); }
+    };
+
+    window.adicionarCalda = () => {
+        const chave = toKey(document.getElementById('calda-chave').value);
+        const preco = parseFloat(document.getElementById('calda-preco').value);
+        if (chave && !isNaN(preco)) { OPCOES.Caldas[chave] = preco; salvar(); }
+    };
+
+    window.adicionarEntrega = () => {
+        const nome = document.getElementById('entrega-nome').value.trim();
+        const taxa = parseFloat(document.getElementById('entrega-taxa').value);
+        const chave = toKey(nome);
+        if (nome && !isNaN(taxa)) {
+            OPCOES.Entrega[chave] = { nome, taxa };
+            salvar();
+        }
+    };
+
+    window.adicionarLanche = () => {
+        const chave = toKey(document.getElementById('lanche-chave').value);
+        const nome = document.getElementById('lanche-nome').value.trim();
+        const preco = parseFloat(document.getElementById('lanche-preco').value);
+        const desc = document.getElementById('lanche-desc').value.trim();
+        if (chave && nome && !isNaN(preco)) {
+            if (!OPCOES.Lanches) OPCOES.Lanches = {};
+            OPCOES.Lanches[chave] = { nome, preco, descricao: desc || "" };
+            salvar();
+        }
+    };
+
+    // EDITAR
+    window.editar = (listaId, chave) => {
+        if (listaId === 'lista-lanches') {
+            const item = OPCOES.Lanches[chave];
+            document.getElementById('lanche-chave').value = chave;
+            document.getElementById('lanche-nome').value = item.nome;
+            document.getElementById('lanche-preco').value = item.preco;
+            document.getElementById('lanche-desc').value = item.descricao || '';
+            delete OPCOES.Lanches[chave];
+            renderizarTudo();
+            return;
+        }
+
+        const map = {
+            'lista-tamanhos': ['Tamanhos', 'tamanho-chave', 'tamanho-nome', 'tamanho-preco'],
+            'lista-complementos': ['Complementos', 'comp-chave', null, 'comp-preco'],
+            'lista-caldas': ['Caldas', 'calda-chave', null, 'calda-preco'],
+            'lista-entregas': ['Entrega', 'entrega-nome', null, 'entrega-taxa']
+        };
+        const [secao, campoChave, campoNome, campoPreco] = map[listaId];
+        const item = OPCOES[secao][chave];
+
+        document.getElementById(campoChave).value = chave.replace(/_/g, ' ');
+        if (campoNome) document.getElementById(campoNome).value = item.nome || item;
+        if (campoPreco) document.getElementById(campoPreco).value = item.preco || item;
+
+        delete OPCOES[secao][chave];
+        renderizarTudo();
+    };
+
+    window.remover = (listaId, chave) => {
+        if (!confirm('Remover mesmo?')) return;
+        const map = {
+            'lista-tamanhos': 'Tamanhos',
+            'lista-complementos': 'Complementos',
+            'lista-caldas': 'Caldas',
+            'lista-entregas': 'Entrega',
+            'lista-lanches': 'Lanches'
+        };
+        delete OPCOES[map[listaId]][chave];
+        salvar();
+    };
+
+    function salvar() {
+        fetch('/admin/salvar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(OPCOES)
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.status === 'success') {
+                renderizarTudo();
+                limparCampos();
+                alert('Salvo com sucesso!');
+            }
+        });
+    }
+
+    function limparCampos() {
+        document.querySelectorAll('input[type=text], input[type=number]').forEach(i => i.value = '');
+        document.getElementById('lanche-desc').value = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', carregarDados);
+</script>
+</body>
+</html>

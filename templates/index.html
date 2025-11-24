@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ title }}</h1>
+        <form method="post">
+            <div class="form-group">
+                <label for="endereco">Endereço de Entrega:</label>
+                <input type="text" id="endereco" name="endereco" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tamanho">Escolha o Tamanho do Açaí:</label>
+                <select id="tamanho" name="tamanho" required>
+                    {% for size, price in prices.items() %}
+                        <option value="{{ size }}">{{ size }}ml - R$ {{ "%.2f"|format(price) }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Complementos (opcional):</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="complementos" value="Leite em pó"> Leite em pó</label>
+                    <label><input type="checkbox" name="complementos" value="Granola"> Granola</label>
+                    <label><input type="checkbox" name="complementos" value="Banana"> Banana</label>
+                    <label><input type="checkbox" name="complementos" value="Morango"> Morango</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="pagamento">Forma de Pagamento:</label>
+                <select id="pagamento" name="pagamento" required>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Cartão">Cartão</option>
+                    <option value="Pix">Pix</option>
+                </select>
+            </div>
+
+            <button type="submit">Fazer Pedido</button>
+        </form>
+    </div>
+</body>
+</html>
